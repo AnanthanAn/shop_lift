@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_lift/screens/registration_screen.dart';
 
 
 class LoginPage extends StatelessWidget {
@@ -142,7 +143,7 @@ class LoginPage extends StatelessWidget {
                 SizedBox(width: 5.0),
                 InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed('/signup');
+                    Navigator.pushNamed(context, RegistrationScreen.id);
                   },
                   child: Text(
                     'Register',
