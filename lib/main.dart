@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_lift/screens/home_page.dart';
 import 'package:shop_lift/screens/login_screen.dart';
 import 'package:shop_lift/screens/registration_screen.dart';
 
@@ -12,6 +13,7 @@ class MyApp extends StatelessWidget {
       routes: {
         LoginPage.id : (context) => LoginPage(),
         RegistrationScreen.id: (context) => RegistrationScreen(),
+        HomePage.id: (context) => HomePage(),
       },
     );
   }

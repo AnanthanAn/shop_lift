@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:shop_lift/constants.dart';
+import 'package:shop_lift/screens/home_page.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static String id = 'regisration_screen';
@@ -10,10 +15,13 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _firebaseAuth = FirebaseAuth.instance;
+  final _firestore = Firestore.instance.collection('users');
 
   String _email;
-
   String _password;
+  String _confirmPassword;
+  String _name;
+  String _flatNo;
 
   @override
   Widget build(BuildContext context) {
@@ -53,16 +61,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       TextField(
                         decoration: InputDecoration(
                           labelText: 'NAME',
-                          labelStyle: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey),
+                          labelStyle: kTextFieldLabelStyle,
                           // hintText: 'EMAIL',
                           // hintStyle: ,
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.green),
                           ),
                         ),
+                        onChanged: (value) {
+                          _name = value;
+                        },
                       ),
                       TextField(
                         onChanged: (value) {
@@ -70,23 +78,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         },
                         decoration: InputDecoration(
                             labelText: 'EMAIL',
-                            labelStyle: TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
+                            labelStyle: kTextFieldLabelStyle,
                             // hintText: 'EMAIL',
                             // hintStyle: ,
                             focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.green))),
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(height: 10.0),
                       TextField(
                         decoration: InputDecoration(
                           labelText: 'PASSWORD ',
-                          labelStyle: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey),
+                          labelStyle: kTextFieldLabelStyle,
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.green),
                           ),
@@ -100,24 +103,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       TextField(
                         decoration: InputDecoration(
                             labelText: 'CONFIRM PASSWORD ',
-                            labelStyle: TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
+                            labelStyle: kTextFieldLabelStyle,
                             focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.green))),
+                        obscureText: true,
                       ),
                       TextField(
                         decoration: InputDecoration(
-                            labelText: 'FLAT NO',
-                            labelStyle: TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
-                            // hintText: 'EMAIL',
-                            // hintStyle: ,
-                            focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green))),
+                          labelText: 'FLAT NO',
+                          labelStyle: kTextFieldLabelStyle,
+                          // hintText: 'EMAIL',
+                          // hintStyle: ,
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.green),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          _flatNo = value;
+                        },
                       ),
                       SizedBox(height: 50.0),
                       Container(
@@ -129,12 +132,29 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             elevation: 7.0,
                             child: GestureDetector(
                               onTap: () async {
+                                var progressDialog = new ProgressDialog(context);
+                                progressDialog.show();
                                 try {
+                                  if (_password != _confirmPassword ||
+                                      _password.isEmpty) {}
                                   var newUser = await _firebaseAuth
                                       .createUserWithEmailAndPassword(
                                           email: _email, password: _password)
                                       .whenComplete(() {
                                     print('User registered successfully');
+                                  });
+                                  _firestore
+                                      .document(newUser.user.uid)
+                                      .setData({
+                                    'id': newUser.user.uid,
+                                    'name': _name,
+                                    'email': newUser.user.email,
+                                    'flatNo': _flatNo,
+                                  }).whenComplete(() {
+                                    print('added to users');
+                                    progressDialog.dismiss();
+                                    Navigator.pushNamed(context, HomePage.id);
+                                    newUser.user.sendEmailVerification();
                                   });
                                 } catch (e) {
                                   print(e);
@@ -143,13 +163,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 }
                               },
                               child: Center(
-                                child: Text(
-                                  'SIGNUP',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Montserrat'),
-                                ),
+                                child: Text('SIGNUP', style: kButtonTextStyle),
                               ),
                             ),
                           )),

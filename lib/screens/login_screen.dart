@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:shop_lift/screens/home_page.dart';
 import 'package:shop_lift/screens/registration_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
-
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   static String id = 'login_screen';
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _auth = FirebaseAuth.instance;
+
+  String _email;
+  String _password;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,25 +56,35 @@ class LoginPage extends StatelessWidget {
                   children: <Widget>[
                     TextField(
                       decoration: InputDecoration(
-                          labelText: 'MOBILE',
-                          labelStyle: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey),
-                          focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green))),
+                        labelText: 'EMAIL',
+                        labelStyle: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        _email = value;
+                      },
                     ),
                     SizedBox(height: 20.0),
                     TextField(
                       decoration: InputDecoration(
-                          labelText: 'PASSWORD',
-                          labelStyle: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey),
-                          focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green))),
+                        labelText: 'PASSWORD',
+                        labelStyle: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
+                        ),
+                      ),
                       obscureText: true,
+                      onChanged: (value){
+                        _password = value;
+                      },
                     ),
                     SizedBox(height: 5.0),
                     Container(
@@ -87,7 +110,16 @@ class LoginPage extends StatelessWidget {
                         color: Colors.green,
                         elevation: 7.0,
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            try{
+                              _auth.signInWithEmailAndPassword(email: _email, password: _password).whenComplete((){
+                                Navigator.pushNamed(context, HomePage.id);
+                              });
+                            }catch(e){
+                              print(e);
+                            }
+
+                          },
                           child: Center(
                             child: Text(
                               'LOGIN',
@@ -117,7 +149,7 @@ class LoginPage extends StatelessWidget {
                           children: <Widget>[
                             Center(
                               child:
-                              ImageIcon(AssetImage('assets/facebook.png')),
+                                  ImageIcon(AssetImage('assets/facebook.png')),
                             ),
                             SizedBox(width: 10.0),
                             Center(
