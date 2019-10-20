@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shop_lift/constants.dart';
 import 'package:shop_lift/screens/home_page.dart';
 import 'package:shop_lift/screens/registration_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   static String id = 'login_screen';
@@ -57,10 +59,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextField(
                       decoration: InputDecoration(
                         labelText: 'EMAIL',
-                        labelStyle: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey),
+                        labelStyle: kTextFieldLabelStyle,
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.green),
                         ),
@@ -73,10 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextField(
                       decoration: InputDecoration(
                         labelText: 'PASSWORD',
-                        labelStyle: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey),
+                        labelStyle: kTextFieldLabelStyle,
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.green),
                         ),
@@ -111,22 +107,30 @@ class _LoginPageState extends State<LoginPage> {
                         elevation: 7.0,
                         child: GestureDetector(
                           onTap: () {
-                            try{
-                              _auth.signInWithEmailAndPassword(email: _email, password: _password).whenComplete((){
-                                Navigator.pushNamed(context, HomePage.id);
-                              });
-                            }catch(e){
-                              print(e);
+                            if(_email == null ||_password == null){
+                              Fluttertoast.showToast(
+                                  msg: "Enter Email and Password..",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIos: 1,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
+                            }else{
+                              try{
+                                _auth.signInWithEmailAndPassword(email: _email, password: _password).whenComplete((){
+                                  Navigator.pushNamed(context, HomePage.id);
+                                });
+                              }catch(e){
+                                print(e);
+                                Fluttertoast.showToast(msg: 'Oops..Something is wrong');
+                              }
                             }
-
                           },
                           child: Center(
                             child: Text(
                               'LOGIN',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Montserrat'),
+                              style: kButtonTextStyle,
                             ),
                           ),
                         ),
