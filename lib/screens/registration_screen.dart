@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shop_lift/constants.dart';
 import 'package:shop_lift/screens/home_page.dart';
@@ -135,8 +135,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 var progressDialog = new ProgressDialog(context);
                                 progressDialog.show();
                                 try {
-                                  if (_password != _confirmPassword ||
-                                      _password.isEmpty) {}
+                                  if (_password != _confirmPassword || _password == null) {
+                                    Fluttertoast.showToast(msg: 'Passwords dont match.please check');
+                                  }
                                   var newUser = await _firebaseAuth
                                       .createUserWithEmailAndPassword(
                                           email: _email, password: _password)
