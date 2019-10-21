@@ -26,7 +26,7 @@ class CatCard extends StatelessWidget {
                 Image.network(
                     imageURL),
                 Text(titleLabel,style: kTextFieldLabelStyle,),
-                Icon(Icons.arrow_forward_ios)
+                Icon(Icons.arrow_forward_ios,color: Colors.green,)
               ],
             ),
           ),
