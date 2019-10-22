@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shop_lift/constants.dart';
 import 'package:shop_lift/screens/home_page.dart';
 import 'package:shop_lift/screens/registration_screen.dart';
@@ -15,12 +16,20 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _auth = FirebaseAuth.instance;
-
   String _email;
   String _password;
+//
+//  @override
+//  void initState() {
+//    super.initState();
+//    if(_auth.currentUser() != null ){
+//      Navigator.pushNamed(context, HomePage.id);
+//    }
+//  }
 
   @override
   Widget build(BuildContext context) {
+    ProgressDialog progressDialog = ProgressDialog(context);
     return Scaffold(
         resizeToAvoidBottomPadding: false,
         body: Column(
@@ -118,7 +127,9 @@ class _LoginPageState extends State<LoginPage> {
                               );
                             }else{
                               try{
+                                progressDialog.show();
                                 _auth.signInWithEmailAndPassword(email: _email, password: _password).whenComplete((){
+                                  progressDialog.dismiss();
                                   Navigator.pushNamed(context, HomePage.id);
                                 });
                               }catch(e){
