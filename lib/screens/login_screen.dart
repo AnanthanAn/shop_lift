@@ -18,6 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final _auth = FirebaseAuth.instance;
   String _email;
   String _password;
+  //Todo : implement user auth without navigating to login every time
 //
 //  @override
 //  void initState() {
